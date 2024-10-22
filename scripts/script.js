@@ -13,10 +13,10 @@ const Modal = {
     template: 
         `<div class="modal">
             <div class="modal-content">
-                <h2>Customize {{ product.name }}</h2>
+                <h2>Personaliza {{ product.name }}</h2>
                 <div class="category-filter">
                     <select v-model="selectedCategory" class="category-select">
-                        <option value="">All Categories</option>
+                        <option value="">Todas Las categorías</option>
                         <option v-for="category in categories" :key="category" :value="category">
                         {{ category }}
                         </option>
@@ -24,7 +24,7 @@ const Modal = {
                 </div>
                 <div class="grid-container">
                     <div>
-                        <h3>Available Complements:</h3>
+                        <h3>Complementos Disponibles:</h3>
                         <ul class="complement-list available-complements">
                             <li v-for="complement in filteredComplements" :key="complement.id"
                                 :class="{ 'draggable-item disabled cursor-not-allowed': !isCompatible(complement), 'draggable-item': isCompatible(complement) }"
@@ -35,7 +35,7 @@ const Modal = {
                         </ul>
                     </div>
                     <div>
-                        <h3>Selected Complements:</h3>
+                        <h3>Complementos seleccionados:</h3>
                         <ul class="complement-list selected-complements">
                             <li v-for="complement in selectedComplements" :key="complement.id" 
                                 class="draggable-item" 
@@ -45,7 +45,7 @@ const Modal = {
                         </ul>
                     </div>
                 </div>
-                <p class="total-price">Total Price: {{ totalPrice | currency }}</p>
+                <p class="total-price">Precio Total: {{ totalPrice | currency }}</p>
                 <div class="button-container">
                     <button @click="confirmSelection" class="button confirm">Confirm</button>
                     <button @click="closeModal" class="button cancel">Cancel</button>
