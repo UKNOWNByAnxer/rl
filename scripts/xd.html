@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Customize Product</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #333;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+      width: 80%;
+      max-width: 600px;
+    }
+
+    .modal-content h2 {
+      color: #fff;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .grid-container h3 {
+      color: #fff;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .complement-list {
+      min-height: 150px;
+      background-color: #444;
+      padding: 10px;
+      border-radius: 5px;
+      border: 2px dashed #666;
+    }
+
+
+    .complement-list li {
+      cursor: grab;
+      padding: 5px 10px;
+      background-color: #555;
+      margin-bottom: 5px;
+      border-radius: 5px;
+    }
+
+    .complement-list li.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .complement-list li.selected {
+      background-color: #666;
+    }
+
+    .total-price {
+      color: #fff;
+      margin-top: 10px;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 15px;
+    }
+
+    .button {
+      padding: 8px 15px;
+      border-radius: 5px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .confirm {
+      background-color: #4CAF50;
+      color: white;
+      margin-right: 10px;
+    }
+
+    .cancel {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .draggable-item {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      /* Rest of the styles */
+    }
+  </style>
+</head>
+<body>
+
+<div class="modal">
+  <div class="modal-content">
+    <h2>CUSTOMIZE PRODUCT 1</h2>
+
+    <div class="grid-container">
+      <div>
+        <h3>AVAILABLE COMPLEMENTS:</h3>
+        <ul class="complement-list">
+          <li class="draggable-item" data-id="1" data-compatible="true">EXTRA CHEESE - 1</li>
+          <li class="draggable-item" data-id="2" data-compatible="true">BACON - 2</li>
+          <li class="draggable-item" data-id="3" data-compatible="true">AVOCADO - 1</li>
+          <li class="draggable-item disabled" data-id="4" data-compatible="false">ICE CREAM - 3</li>
+        </ul>
+      </div>
+      <div>
+        <h3>SELECTED COMPLEMENTS:</h3>
+        <ul class="complement-list selected-complements"></ul>
+      </div>
+    </div>
+
+    <p class="total-price">TOTAL PRICE: 10</p>
+
+    <div class="button-container">
+      <button class="button confirm">CONFIRM</button>
+      <button class="button cancel">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Get the available and selected complements lists
+  const availableComplementsList = document.querySelector('.complement-list');
+  const selectedComplementsList = document.querySelector('.selected-complements');
+
+  // Add event listeners for drag and drop
+  availableComplementsList.addEventListener('dragstart', handleDragStart);
+  availableComplementsList.addEventListener('dragover', handleDragOver);
+  availableComplementsList.addEventListener('drop', handleDrop);
+  selectedComplementsList.addEventListener('dragover', handleDragOver);
+  selectedComplementsList.addEventListener('drop', handleDrop);
+
+  // Initialize drag and drop variables
+  let draggedItem;
+
+  // Function to handle drag start event
+  function handleDragStart(event) {
+    // Prevent data from being copied to dragged item
+    event.dataTransfer.setData('text', event.target.id);
+    // Set the dragged item
+    draggedItem = event.target;
+  }
+
+  // Function to handle drag over event
+  function handleDragOver(event) {
+    // Prevent default behavior (dropping in the middle of the element)
+    event.preventDefault();
+  }
+
+  // Function to handle drop event
+  function handleDrop(event) {
+    // Prevent default behavior (dropping in the middle of the element)
+    event.preventDefault();
+
+    // Get the id of the dragged element
+    const draggedItemId = event.dataTransfer.getData('text');
+
+    // Check if the dragged item is compatible
+    const draggedItemCompatible = draggedItem.dataset.compatible === 'true';
+
+    // Check if the drop target is the available complements list
+    if (event.target === availableComplementsList) {
+      // If the dragged item is compatible, add it back to the available complements list
+      if (draggedItemCompatible) {
+        availableComplementsList.appendChild(draggedItem);
+      }
+    } else if (event.target === selectedComplementsList) {
+      // If the dragged item is compatible, add it to the selected complements list
+      if (draggedItemCompatible) {
+        selectedComplementsList.appendChild(draggedItem);
+        // Check if the dragged item was previously added to the selected complements list
+        if (draggedItem.classList.contains('selected')) {
+          // If it was, remove the selected class
+          draggedItem.classList.remove('selected');
+        } else {
+          // If it wasn't, add the selected class
+          draggedItem.classList.add('selected');
+        }
+      } else {
+        // If the dragged item is not compatible, show an error message
+        alert('This complement is not compatible.');
+      }
+    }
+  }
+</script>
+</body>
+</html>

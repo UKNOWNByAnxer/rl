@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+    <!-- META SECTIONS (SEARCH ENGINE OPTIMIZATION) -->
+    <title>Roll Cafe - Authentic Sushi, Fresh Rolls, and Local Delights</title>
+    <meta name="description" content="Visit Roll Cafe for the best sushi, fresh rolls, and delightful Japanese flavors. Order online or explore our exclusive menu today!">
+    <!-- META SECTIONS (SEARCH ENGINE OPTIMIZATION) -->
+    <!-- Sortable  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <!-- Import Vue -->
+    <script src="Vue3.js"></script>
+    <!-- Link Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Box Icons -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+    <!--Script API Email-->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <!-- API Key -->
+    <script type="text/javascript"> emailjs.init('Yd4oW1Y5UFe4HRk21')</script>
+    <!--Script Alerts-->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!--npm run dev para ejecutar el servidor-->
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header>
+            <a href="#" class="logo"><img id="logo" src="./logo.png" width="60px" height="60px">Roll Cafe</a>
+            <ul class="navlist">
+                <li><a href="#home" class="active">Home</a></li>
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#shop">Our Shop</a></li>
+                <li><a href="#review">Our Customer</a></li>
+                <li><a href="#contact">Contact Us</a></li>
+            </ul>
+            <div class="nav-icons">
+                <a href="#"><i class="bx bx-cart"></i></a><span>({{ cart.length }})</span>
+                <div class="bx bx-menu" id="menu-icon"></div>
+            </div>
+        </header>
+        <!-- Home Section -->
+        <section id="home" class="home">
+            <div class="home-text">
+                <h1>Meet, <span>Eat &</span><br>Enjoy the true<br>taste</h1>
+                <a href="#" class="btn">Explore Menu <i class="bx bxs-right-arrow"></i></a>
+                <a href="#" class="btn-2">Order Now</a>
+            </div>
+            <div class="home-img">
+                <img src="img/hero.png">
+            </div>
+        </section>
+        <!-- Container -->
+        <section class="container">
+            <div class="container-box">
+                <i class="bx bxs-hourglass"></i>
+                <h3>11:00 am -8:00 pm</h3>
+                <a href="#">Working Hours</a>
+            </div>
+            
+            <div class="container-box">
+                <i class="bx bxs-location-plus"></i>
+                <h3>Roll Cafe 555</h3>
+                <a href="#">Get Directions</a>
+            </div>
+            
+            <div class="container-box">
+                <i class="bx bxs-phone"></i>
+                <h3>(427) 111-22-33</h3>
+                <a href="#">Call Us Now</a>
+            </div>
+        </section>
+        <!-- About Us Section -->
+        <section class="about" id="about">
+            <div class="about-img">
+                <img src="img/about.png">
+            </div>
+            <div class="about-text">
+                <h2>Living well begins <br> with eating well.</h2>
+                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Illum laboriosam neque molestias voluptatum minima beatae aliquid eveniet quam minus. Placeat excepturi quis sequi temporibus earum quam molestiae illum qui eos.</p>
+                <a href="#" class="btn">Explore Store <i class="bx bxs-right-arrow"></i></a>
+            </div>
+        </section>
+        <!-- Our Shop Section -->
+        <section class="shop" id="shop">
+            <div class="middle-text">
+                <h4>Our Shop</h4>
+                <h2>Let's Check Popular Products</h2>
+            </div>
+            <div class="category-filter">
+                <select id="category-select" v-model="selectedCategory">
+                    <option v-for="category in categories" :key="category.value" :value="category.value">
+                        {{ category.label }}
+                    </option>
+                </select>
+            </div>
+            <div class="shop-content">
+                <shop-item v-for="(product, index) in filteredProducts" 
+                    :key="index"
+                    :image-src="product.image" 
+                    :product-name="product.name" 
+                    :product-description="product.description" 
+                    :price="product.price" 
+                    :product-tipo="product.tipo"
+                    @open-modal="openModal">
+                </shop-item>
+            </div>
+            
+            <!-- Conditionally render the modal -->
+            <modal v-if="isModalOpen" 
+            :product="selectedProduct" 
+            @close="closeModal"
+            @confirm="addToCart">
+            </modal>
+<!--             <div class="row-btn">
+                <a href="#" class="btn">View More <i class="bx bxs-right-arrow"></i></a>
+            </div> -->
+        </section>
+        <!-- Cart Section -->
+        <section class="cart" id="cart" v-if="cart.length">
+            <h2>Your Cart</h2>
+            <div class="cart-items">
+                <!-- Productos en el carrito -->
+                <div class="cart-item list" v-for="(item, index) in cart" :key="item.id">
+                    <card-product
+                        :item="item"
+                        :index="index"
+                        @remove-from-cart="removeFromCart(index)"
+                    ></card-product>
+                </div>
+            </div>
+            <h3 class="sub-total">Total: ${{ totalPrice }}</h3>
+        
+            <!-- Shipping Information -->
+            <div class="contact-form">
+                <form id="myform">
+                    <div class="Nombre">
+                        <input type="text" name="Nombre" id="Nombre" placeholder="Enter your name" required minlength="3" maxlength="30">
+                    </div>
+                    <div class="Metodo">
+                        <select name="Método" id="Metodo" required>
+                            <option value=" ">Select payment method</option>
+                            <option value="Efectivo">Cash</option>
+                            <option value="Tarjeta">Credit Card</option>
+                        </select>
+                    </div>
+                    <div class="telefono">
+                        <input type="tel" name="teléfono" id="telefono" placeholder="Enter your phone number" required minlength="10" maxlength="15">
+                    </div>
+                    <div class="confirmar-telefono">
+                        <input type="tel" name="confirmar" id="confirmar" placeholder="Confirm your phone number" required minlength="10" maxlength="15">
+                    </div>
+                    <div class="Fecha">
+                        <label for="Fecha">Enter the date you will go through the order</label>
+                        <input type="date" name="Fecha" id="Fecha" required>
+                    </div>
+                    <br>
+                    <div class="enviar" id="enviar">
+                        <button type="button" @click="checkout">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        
+        <!-- Empty Cart Message -->
+        <section class="empty-cart" v-else>
+
+            <h2>Your cart is empty</h2>
+            <a href="#shop" class="btn">Shop Now</a>
+        </section>
+        <!-- Reviews Section -->
+        <section class="reviews" id="review">
+            <div class="middle-text">
+                <h4>Our Customer</h4>
+                <h2>Clients Review About Our Food</h2>
+            </div>
+            <div class="review-content">
+                <review-item 
+                    review-text="Lorem ipsum dolor sit amet consectetur adipisicing elit." 
+                    reviewer-image="img/r1.jpg" 
+                    reviewer-name="John Gómez" 
+                    reviewer-job="Food Vlogger">
+                </review-item>
+    
+                <review-item 
+                    review-text="Great taste and excellent customer service." 
+                    reviewer-image="img/r2.jpg" 
+                    reviewer-name="Jade Mitsuri" 
+                    reviewer-job="Food Blogger">
+                </review-item>
+                <review-item 
+                    review-text="I love the food here! It's always fresh and delicious." 
+                    reviewer-image="img/r3.jpg" 
+                    reviewer-name="Julian Anibal" 
+                    reviewer-job="Food Critic">
+                </review-item>
+            </div>
+        </section>
+        <!-- Contact Us Section -->
+        <section class="contact" id="contact">
+            <div class="contact-content">
+                <div class="contact-text">
+                    <h2>Contact Us</h2>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit...</p>
+                    <div class="social">
+                        <a href="#" class="clr"><i class="bx bxl-facebook"></i></a>
+                        <a href="#"><i class="bx bxl-instagram"></i></a>
+                        <a href="#"><i class="bx bxl-twitter"></i></a>
+                        <a href="#"><i class="bx bxl-google"></i></a>
+                    </div>
+                    <div class="details">
+                        <div class="main-d">
+                            <a href="#"><i class="bx bxs-location-plus"></i>Direction :V</a>
+                        </div>
+                        <div class="main-d">
+                            <a href="#"><i class="bx bxl-youtube"></i>ZLostTK :V</a>
+                        </div>
+                        <div class="main-d">
+                            <a href="#"><i class="bx bxs-bell"></i>Subscribe</a>
+                        </div>
+                        <div class="main-d">
+                            <a href="#"><i class="bx bx-mobile-alt"></i>(427) 111-22-33</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+    </div>
+    <!-- Scroll Top -->
+    <a href="#" class="scroll">
+        <i class="bx bx-up-arrow-alt"></i>
+    </a>
+    <!-- Scroll Reveal Javascript Library -->
+    <script src="https://unpkg.com/scrollreveal"></script>
+    <!-- Fuse.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
+    <!-- Link Javascript -->
+    <script src="scripts/script.js"></script>
+</body>
+</html>
